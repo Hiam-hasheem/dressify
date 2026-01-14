@@ -1,0 +1,58 @@
+.profile-page {
+  min-height: 100vh;
+  padding: 80px 20px;
+  text-align: center;
+  background: #f4ede4;
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 30px;
+}
+
+.profile-card {
+  max-width: 420px;
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  background: #111;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-actions button {
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background: #111;
+  color: #fff;
+}
+
+.profile-actions .secondary {
+  background: #f3f3f3;
+  color: #111;
+}
