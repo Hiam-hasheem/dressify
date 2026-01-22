@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.database import engine, Base
-from app.routers import dresses
+from app.routers import dresses, auth  # ✅ import auth
 
 app = FastAPI(title="Dressify API")
 app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
-# ✅ CORS (VERY IMPORTANT)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -15,11 +15,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Create DB tables
 Base.metadata.create_all(bind=engine)
 
-# ✅ Routes
 app.include_router(dresses.router)
+app.include_router(auth.router)  # ✅ add auth routes
 
 @app.get("/")
 def root():

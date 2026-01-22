@@ -1,23 +1,80 @@
 import "./Auth.css";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await register(name, email, password);
+      navigate("/");
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="auth-box">
         <h1>Create account</h1>
         <p className="subtitle">Join Dressify and start selling</p>
 
-        <form className="auth-form">
-          <input type="text" placeholder="Full name" />
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <input type="password" placeholder="Confirm password" />
+        {error && <p style={{ color: 'red', fontSize: '0.9rem' }}>{error}</p>}
 
-          <button className="btn primary full">Register</button>
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+
+          <button type="submit" className="btn primary full">
+            Register
+          </button>
         </form>
 
         <p className="switch">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account? <Link to="/login">Log in</Link>
         </p>
       </div>
     </div>

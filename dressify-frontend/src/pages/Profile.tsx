@@ -1,6 +1,16 @@
 import "./Profile.css";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className="profile-page">
       <h1>My Profile</h1>
@@ -8,17 +18,19 @@ export default function Profile() {
 
       <div className="profile-card">
         <div className="profile-header">
-          <div className="avatar">A</div>
+          <div className="avatar">{user?.name.charAt(0).toUpperCase()}</div>
           <div>
-            <h3>Anna Smith</h3>
-            <p>anna@email.com</p>
+            <h3>{user?.name}</h3>
+            <p>{user?.email}</p>
           </div>
         </div>
 
         <div className="profile-actions">
           <button>Edit Profile</button>
           <button className="secondary">My Listings</button>
-          <button className="secondary">Logout</button>
+          <button className="secondary" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
     </div>
