@@ -1,11 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import Optional
+import os
+import shutil
+from datetime import datetime
 
 from app.deps import get_db
 from app import models, schemas
 
 router = APIRouter(prefix="/dresses", tags=["Dresses"])
+
+# Create uploads directory if it doesn't exist
+UPLOAD_DIR = "app/uploads/dresses"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ✅ GET ALL DRESSES (WITH OPTIONAL FILTERS)
 @router.get("/", response_model=list[schemas.DressOut])
@@ -44,16 +51,43 @@ def get_dress(dress_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Dress not found")
     return dress
 
-# ✅ CREATE DRESS
+# ✅ CREATE DRESS WITH IMAGE UPLOAD
 @router.post("/", response_model=schemas.DressOut)
-def create_dress(dress: schemas.DressCreate, db: Session = Depends(get_db)):
+async def create_dress(
+    brand: str = Form(...),
+    size: str = Form(...),
+    condition_status: str = Form(...),
+    price: float = Form(...),
+    description: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    image_url = None
+    
+    # Handle image upload
+    if image:
+        # Generate unique filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_extension = os.path.splitext(image.filename)[1]
+        filename = f"{timestamp}_{image.filename}"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(image.file, buffer)
+        
+        # Create URL for frontend
+        image_url = f"/uploads/dresses/{filename}"
+    
+    # Create dress in database
     new_dress = models.Dress(
         user_id=1,  # TEMP until auth
-        brand=dress.brand,
-        size=dress.size,
-        condition_status=dress.condition_status,
-        price=dress.price,
-        description=dress.description,
+        brand=brand,
+        size=size,
+        condition_status=condition_status,
+        price=price,
+        description=description,
+        image_url=image_url
     )
 
     db.add(new_dress)

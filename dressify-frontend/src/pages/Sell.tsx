@@ -1,36 +1,65 @@
 import "./Sell.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Sell() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const [brand, setBrand] = useState("");
   const [size, setSize] = useState("");
   const [conditionStatus, setConditionStatus] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
+
+  // ✅ Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      alert("You need to register or login to sell a dress");
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  // Handle image selection
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload = {
-      brand,
-      size,
-      condition_status: conditionStatus, // ✅ backend expects this
-      price: Number(price),
-      description,
-    };
+    // ✅ Create FormData to send image + text fields
+    const formData = new FormData();
+    formData.append("brand", brand);
+    formData.append("size", size);
+    formData.append("condition_status", conditionStatus);
+    formData.append("price", price);
+    formData.append("description", description);
+    
+    // Add image if selected
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
 
-    console.log("📦 Sending payload:", payload);
+    console.log("📦 Sending dress with image...");
 
     try {
       const res = await fetch("/api/dresses/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        body: formData, // ✅ Send FormData (not JSON)
+        // ❌ Don't set Content-Type header - browser sets it automatically with boundary
       });
 
       if (!res.ok) {
@@ -42,20 +71,26 @@ function Sell() {
 
       alert("Dress published successfully!");
 
-      // ✅ reset form
+      // Reset form
       setBrand("");
       setSize("");
       setConditionStatus("");
       setDescription("");
       setPrice("");
+      setImageFile(null);
+      setImagePreview("");
 
-      // ✅ CRITICAL FIX: go back to browse so it refetches
       navigate("/browse");
     } catch (err) {
       console.error("❌ Failed to publish listing:", err);
       alert("Failed to publish listing");
     }
   };
+
+  // If not authenticated, show loading while redirecting
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="sell-page">
@@ -65,10 +100,32 @@ function Sell() {
       </p>
 
       <form className="sell-form" onSubmit={handleSubmit}>
-        {/* IMAGE (placeholder) */}
+        {/* IMAGE UPLOAD */}
         <div className="form-group">
           <label>Dress Image</label>
-          <div className="image-upload">Upload Image (coming soon)</div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+            id="image-upload"
+          />
+          <label htmlFor="image-upload" className="image-upload">
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                }}
+              />
+            ) : (
+              <span>Click to upload image</span>
+            )}
+          </label>
         </div>
 
         {/* BRAND */}

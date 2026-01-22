@@ -20,32 +20,32 @@ import Privacy from "./pages/Privacy";
 
 function App() {
   return (
-    <AuthProvider>
     <BrowserRouter>
-      <Navbar />
+      <AuthProvider>
+        <Navbar />
 
-      <Routes>
-        {/* Main pages */}
-        <Route path="/" element={<Home />} />
-        <Route path="/browse" element={<Browse />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/sell" element={<Sell />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/chats" element={<Chats />} />
+        <Routes>
+          {/* Main pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/browse" element={<Browse />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/sell" element={<Sell />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/chats" element={<Chats />} />
 
-        {/* Footer pages */}
-        <Route path="/help" element={<Help />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-      </Routes>
+          {/* Footer pages */}
+          <Route path="/help" element={<Help />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+        </Routes>
 
-      <Footer />
+        <Footer />
+      </AuthProvider>
     </BrowserRouter>
-    </AuthProvider>
   );
 }
 

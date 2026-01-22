@@ -34,14 +34,18 @@ function Login() {
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             type="email"
+            name="email"
             placeholder="Email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
+            name="password"
             placeholder="Password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

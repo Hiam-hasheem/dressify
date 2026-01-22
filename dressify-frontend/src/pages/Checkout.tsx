@@ -1,18 +1,34 @@
 import "./Checkout.css";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Checkout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const product = location.state as any;
 
   const [paymentMethod, setPaymentMethod] = useState<
     "card" | "apple" | "paypal" | "cash"
   >("card");
 
+  // ✅ Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      alert("You need to register or login to buy a dress");
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // If not authenticated, show nothing while redirecting
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (!product) {
     return (

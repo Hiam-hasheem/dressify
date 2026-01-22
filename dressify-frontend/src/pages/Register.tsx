@@ -41,28 +41,36 @@ function Register() {
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             type="text"
+            name="name"
             placeholder="Full name"
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           <input
             type="email"
+            name="email"
             placeholder="Email"
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
+            name="password"
             placeholder="Password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <input
             type="password"
+            name="confirm-password"
             placeholder="Confirm password"
+            autoComplete="new-password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required

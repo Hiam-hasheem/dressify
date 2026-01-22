@@ -1,1 +1,0 @@
-image_url = Column(String(255), nullable=True)

@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import "./ProductDetails.css";
 
 function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,16 @@ function ProductDetails() {
       });
   }, [id]);
 
+  // ✅ Handle Buy Now with auth check
+  const handleBuyNow = () => {
+    if (!isAuthenticated) {
+      alert("You need to register or login to buy a dress");
+      navigate("/login");
+      return;
+    }
+    navigate("/checkout", { state: product });
+  };
+
   if (loading) return <p style={{ padding: "40px" }}>Loading...</p>;
   if (!product) return <p style={{ padding: "40px" }}>Product not found.</p>;
 
@@ -37,7 +49,21 @@ function ProductDetails() {
       <div className="details-container">
         {/* LEFT */}
         <div className="images">
-          <div className="main-image">Image</div>
+          {product.image_url ? (
+            <img
+              src={`http://127.0.0.1:8000${product.image_url}`}
+              alt={product.brand}
+              style={{
+                width: "100%",
+                height: "420px",
+                objectFit: "cover",
+                borderRadius: "16px",
+                marginBottom: "20px"
+              }}
+            />
+          ) : (
+            <div className="main-image">No Image</div>
+          )}
         </div>
 
         {/* RIGHT */}
@@ -54,7 +80,7 @@ function ProductDetails() {
           <p className="description">{product.description}</p>
 
           <div className="actions">
-            {/* ✅ BACK */}
+            {/* BACK */}
             <button
               className="btn secondary"
               onClick={() => navigate("/browse")}
@@ -62,7 +88,7 @@ function ProductDetails() {
               ← Back to Browse
             </button>
 
-            {/* ✅ MESSAGE SELLER (placeholder) */}
+            {/* MESSAGE SELLER (placeholder) */}
             <button
               className="btn secondary"
               onClick={() => alert("Messaging coming soon 👀")}
@@ -70,10 +96,10 @@ function ProductDetails() {
               Message Seller
             </button>
 
-            {/* ✅ BUY */}
+            {/* BUY NOW - with auth check */}
             <button
               className="btn primary"
-              onClick={() => navigate("/checkout", { state: product })}
+              onClick={handleBuyNow}
             >
               Buy Now
             </button>

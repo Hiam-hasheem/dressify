@@ -15,9 +15,15 @@ function DressCard({ dress }: { dress: Dress }) {
       {/* IMAGE */}
       {dress.image_url ? (
         <img
-          src={dress.image_url}
+          src={`http://127.0.0.1:8000${dress.image_url}`}
           alt={dress.brand}
-          className="dress-image"
+          style={{
+            width: "100%",
+            height: "220px",
+            objectFit: "cover",
+            borderRadius: "14px",
+            marginBottom: "18px"
+          }}
         />
       ) : (
         <div className="image-placeholder">No Image</div>
